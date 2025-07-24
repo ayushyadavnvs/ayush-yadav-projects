@@ -1,0 +1,10 @@
+../Core/Src/main.c:77:6:displaytime	5
+../Core/Src/main.c:104:6:alarmset	9
+../Core/Src/main.c:145:6:mode_set	5
+../Core/Src/main.c:166:6:setupstopwatch	5
+../Core/Src/main.c:184:6:displaystopwatch	1
+../Core/Src/main.c:195:5:main	4
+../Core/Src/main.c:267:6:SystemClock_Config	4
+../Core/Src/main.c:312:13:MX_RTC_Init	5
+../Core/Src/main.c:382:13:MX_GPIO_Init	1
+../Core/Src/main.c:450:6:Error_Handler	1
