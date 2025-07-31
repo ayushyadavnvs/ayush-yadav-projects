@@ -10,6 +10,18 @@ The processor simulates instruction execution through five stages:
 
 ---
 
+## Instruction Format
+
+The MIPS32 instruction set architecture supports three types of instructions:
+
+![Instruction Formats](quick.png)
+
+- **R-type**: Used for register-to-register ALU operations
+- **I-type**: Used for immediate operations, memory access, and branches
+- **J-type**: Used for jump instructions (not included in this processor)
+
+---
+
 ## Key Features
 
 - Fully functional **32-bit pipelined CPU** in Verilog
@@ -18,6 +30,31 @@ The processor simulates instruction execution through five stages:
 - Branch resolution using **early condition check** and **pipeline flushing**
 - Memory and instruction storage using **separate modules**
 - Two-phase clocking system to separate pipeline stages
+
+---
+
+## Architecture and Data Flow
+
+The processor follows the classic 5-stage pipeline and manages instruction/control flow through a datapath consisting of the following elements:
+
+![Processor Datapath](flow.png)
+
+### Pipelined Stages
+
+1. **IF (Instruction Fetch)**  
+   Fetches instruction from memory and calculates next PC.
+
+2. **ID (Instruction Decode & Register Fetch)**  
+   Decodes opcode, reads registers, and performs sign extension for immediate values.
+
+3. **EX (Execution/Address Calculation)**  
+   Executes ALU operations or computes branch target addresses.
+
+4. **MEM (Memory Access)**  
+   Loads data from memory or writes to memory.
+
+5. **WB (Write Back)**  
+   Writes result back to register file.
 
 ---
 
@@ -42,75 +79,62 @@ The processor simulates instruction execution through five stages:
 
 ---
 
-## Architecture Details
+## Clock Cycle Execution
 
-### Pipelined Stages
+The pipelined design allows multiple instructions to be in different stages of execution simultaneously. Below is a visual representation:
 
-1. **IF (Instruction Fetch)**  
-   Fetches instruction from memory and calculates next PC.
+![Pipeline Clock Cycle](clockcycles.png)
 
-2. **ID (Instruction Decode & Register Fetch)**  
-   Decodes opcode, reads registers, and performs sign extension for immediate values.
-
-3. **EX (Execution/Address Calculation)**  
-   Executes ALU operations or computes branch target addresses.
-
-4. **MEM (Memory Access)**  
-   Loads data from memory or writes to memory.
-
-5. **WB (Write Back)**  
-   Writes result back to register file.
+Each instruction progresses one stage per clock cycle, and the pipeline is kept busy with new instructions entering every cycle.
 
 ---
-![QUICK VIEW](quick.png)
-![FLOWCHART](flow.png)
-![Cycle](clockcycles.png)
+
 ## Hazard Handling
 
 - **Data Hazards**  
-  Mitigated using two-phase clocking and **controlled stalling** to allow operand availability.
+  Managed using **two-phase clocking** and controlled **stalling**. This ensures that operands are ready before being used in the ALU or memory stages.
 
 - **Control Hazards**  
-  Branch condition is evaluated **early in EX stage**. If the branch is taken, **IF and ID stages are flushed**, reducing penalties.
+  Handled by evaluating branch conditions in the **EX stage**. If a branch is taken, the IF and ID stages are **flushed**, resulting in minimal penalty.
 
 - **Structural Hazards**  
-  Avoided using **separate instruction and data memories**, and a **two-port register file** enabling concurrent reads and writes.
+  Eliminated by using **separate instruction and data memories**, and a **two-read, one-write register file**.
 
 ---
 
 ## Design Decisions
 
-- Inter-stage pipeline registers (e.g., `IF_ID_IR`, `ID_EX_A`) store intermediate values and signals.
-- Control signals are abstracted using `TYPE` parameters for stage-aware decoding.
-- Memory is implemented as a 1KB array: `Mem[1023:0]`.
-- Register file contains 32 registers: `Reg[31:0]`.
+- Inter-stage pipeline registers (e.g., `IF_ID_IR`, `ID_EX_A`) store intermediate values and control signals.
+- Memory is modeled as a 1KB array (`Mem[1023:0]`).
+- Register file consists of 32 general-purpose registers (`Reg[31:0]`).
+- Custom `TYPE` control values distinguish instruction categories in pipeline stages.
 
 ---
 
 ## Technologies Used
 
 - **Verilog HDL**
-- **RTL Design**
+- **RTL Design Methodology**
 - **Digital Logic and Computer Architecture**
-- Simulation tools: **ModelSim**, **Xilinx Vivado** (or any compatible Verilog simulator)
+- Simulated using **ModelSim**, **Vivado**, or other compatible tools
 
 ---
 
 ## Project Highlights
 
-- Built a working pipelined processor with support for branching, arithmetic, and memory operations
-- Implemented clean pipeline stage isolation with intermediate registers
-- Integrated hazard handling logic with minimal pipeline stalling
-- Applied early branch resolution and pipeline flushing for control hazards
+- Built a functional pipelined processor with support for branching, arithmetic, and memory operations
+- Gained practical exposure to instruction-level parallelism and pipeline design
+- Implemented clean hazard handling and flushing mechanisms
+- Reinforced key concepts of datapath design and control signal management
 
 ---
 
 ## How to Run
 
-1. Load the Verilog source files into a Verilog simulator (e.g., ModelSim, Vivado).
-2. Initialize the `Mem` array with binary instruction data.
-3. Toggle the two clock inputs (`clk1`, `clk2`) alternately to simulate pipeline flow.
-4. Observe internal pipeline registers (`IF_ID_IR`, `ID_EX_A`, etc.) to track instruction movement.
-5. Monitor `Reg` and `Mem` arrays to view results.
+1. Load the Verilog source code into a simulator (e.g., Vivado, ModelSim).
+2. Initialize `Mem` with encoded instruction binaries.
+3. Use alternating clock signals (`clk1` and `clk2`) to simulate pipelined flow.
+4. Observe pipeline register contents (`IF_ID_IR`, `ID_EX_A`, etc.) and register values.
+5. Validate memory outputs and register file for correctness.
 
 
