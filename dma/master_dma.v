@@ -160,8 +160,8 @@ endfunction
                         if (read_counter == length ) begin
                             read_state <= READ_DONE;
                         end else begin
-                            read_address <= read_address + 1;  // Word-aligned increment in address 
-                            read_counter <= read_counter + 1; // as length is word aligned 
+                            read_address <= read_address + 4;  // Word-aligned increment in address 
+                            read_counter <= read_counter + 4; // as length is word aligned 
                             read_state <= READ_ADDR;
                         end
                     end
@@ -177,7 +177,7 @@ endfunction
                 WRITE_IDLE: begin
                     if (trigger) begin
                         write_state <= WRITE_ADDR;
-                        write_address <= word_to_byte_address(destination_address);
+                        write_address <=destination_address;
                         write_counter <= 0;
                         done <= 0;  // Clear done signal
                     end
@@ -219,7 +219,7 @@ endfunction
                         if (write_counter == length ) begin
                             write_state <= WRITE_DONE;
                         end else begin
-                            write_address <= write_address + 1;  // Word-aligned increment
+                            write_address <= write_address + 4;  // Word-aligned increment
                             write_counter <= write_counter + 4; // word aligned increment in length
                             write_state <= WRITE_ADDR;
                         end
